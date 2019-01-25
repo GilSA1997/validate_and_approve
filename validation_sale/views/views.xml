@@ -1,0 +1,82 @@
+<odoo>
+  <data>
+
+    <!--CODIFO PARA MODIFICAR LOS BOTONES EXISTENTES EN ODOO-->
+    <record id="sale_order_confirmbtn" model="ir.ui.view">
+        <field name="name">sale.order.confirm</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="attrs">{'invisible':[('state','!=', ('aprobe'))]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send'][1]" position="attributes">
+                <attribute name="string">Enviar por email</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+    <!--CODIGO PARA AGREGAR UN NUEVO BOTON DE VALIDAR-->
+    <record id="validation_inherit" model="ir.ui.view">
+      <field name="name">sale.order.validation</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <data>
+          <xpath expr="//header/button[@name='print_quotation'][1]" position="after" action_cancel="false">
+            <button name="action_validate" string="Validar" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=', ('draft'))]}"/>
+          </xpath>
+        </data>
+      </field>
+    </record>
+  
+    <!--CODIGO PARA AGREGAR UN NUEVO BOTON DE APROBAR-->
+    <record id="validation_inherit_2" model="ir.ui.view">
+      <field name="name">sale.order.validation</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <data>
+          <xpath expr="//header/button[@name='preview_sale_order']" position="before">
+            <button attrs="{'invisible':[('state','!=', ('validate'))]}" name="action_approve" string="Aprobar" type="object" class="oe_highlight"/>
+          </xpath>
+          
+          <xpath expr="//button[@name='action_cancel']" position="attributes">
+            <attribute name="states">draft,sent,sale,done,approve,validate</attribute>
+          </xpath>
+          
+        </data>
+      </field>
+    </record>
+    
+    <!--CODIGO PARA AGREGAR LOS NUEVO STATES AL SECTION-->
+    <record id="sale_form_view" model="ir.ui.view">
+      <field name="name">sale.order.form.inherit</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <field name="state" position="replace">
+        <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,validate,approve,done,cancel"/>
+        </field>
+      </field>
+    </record>
+
+    <!--NUEVO PAGE-->
+    <record id="sale_notebook_page" model="ir.ui.view">
+      <field name="name">sale.notebook.page</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//page[@name='other_information']" position="after">
+          <page name="page_validate_approve" string="Validacion" selected="1">
+            <group>
+              <field name="uservalidation" states="validate,approve"></field>
+              <field name="userapprove" readonly="1" states="approve"></field>
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+
+  </data>
+</odoo>
